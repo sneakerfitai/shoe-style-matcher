@@ -66,6 +66,7 @@ const App = () => {
         setDetectedColors({ mainColors: [], sideColors: [] });
         setMatchingProducts([]);
         setError('');
+        // FIX: Cast the element to HTMLInputElement to access the 'value' property.
         const fileInput = document.getElementById('shoe-image-upload') as HTMLInputElement;
         if (fileInput) {
             fileInput.value = '';
@@ -126,7 +127,10 @@ const App = () => {
         if (file) { // Now, check if a file was selected and process it
             const reader = new FileReader();
             reader.onloadend = () => {
-                setImagePreview(reader.result as string); // Set preview when file is loaded
+                // FIX: Ensure reader.result is a string before setting state.
+                if (typeof reader.result === 'string') {
+                    setImagePreview(reader.result); // Set preview when file is loaded
+                }
             };
             reader.readAsDataURL(file);
         }

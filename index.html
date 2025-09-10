@@ -9,10 +9,28 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
+    <!-- Add Babel for in-browser transpilation of TSX -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
+    <!-- Add import map to load modules from a CDN -->
+    <script type="importmap">
+{
+  "imports": {
+    "preact": "https://esm.sh/preact@10.27.1",
+    "preact/hooks": "https://esm.sh/preact@10.27.1/hooks",
+    "htm/preact": "https://esm.sh/htm@3.1.1/preact",
+    "@google/genai": "https://esm.sh/@google/genai",
+    "preact/": "https://aistudiocdn.com/preact@^10.27.1/",
+    "htm/": "https://aistudiocdn.com/htm@^3.1.1/"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
 </head>
 <body>
     <div id="root"></div>
-    <script type="module" src="index.tsx"></script>
+    <!-- Change script type to be handled by Babel -->
+    <script type="text/babel" data-type="module" src="index.tsx"></script>
+<script type="module" src="/index.tsx"></script>
 </body>
 </html>
