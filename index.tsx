@@ -11,6 +11,7 @@ import { GoogleGenAI } from "@google/genai";
 const html = htm.bind(h);
 
 // Initialize the Google AI client
+// Fix: Use process.env.API_KEY as required by the coding guidelines.
 const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
 
