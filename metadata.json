@@ -1,0 +1,5 @@
+{
+  "name": "Shoe Style Matcher",
+  "description": "Upload an image of your shoes to find matching products from our catalog.",
+  "requestFramePermissions": []
+}
