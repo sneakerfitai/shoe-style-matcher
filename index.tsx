@@ -5,13 +5,14 @@
 import { h, render } from 'preact';
 import { useState, useEffect, useCallback } from 'preact/hooks';
 import htm from 'htm';
-import { GoogleGenAI } from "@google/genai";
+// FIX: Import `Type` for defining the response schema.
+import { GoogleGenAI, Type } from "@google/genai";
 
 // Initialize htm with Preact's hyperscript function
 const html = htm.bind(h);
 
-// Initialize the Google AI client
-// Fix: Use process.env.API_KEY as required by the coding guidelines, which also resolves the TypeScript error.
+// Initialize the Google AI client.
+// FIX: Use `process.env.API_KEY` as per the coding guidelines to resolve the error.
 const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
 
@@ -155,24 +156,40 @@ const App = () => {
                 },
             };
             
-            const combinedPrompt = `First, determine if this image contains a shoe.
-If it does not, respond with the JSON object: {"isShoe": false, "mainColors": [], "sideColors": []}.
-If it DOES contain a shoe, identify its dominant colors. Classify colors covering 10% or more of the shoe as "mainColors" and colors covering less than 10% as "sideColors".
-For example, for the Kobe 6 Grinch shoe, the response should be: {"isShoe": true, "mainColors": ["green", "lime green"], "sideColors": ["black", "red"]}.
-Respond ONLY with the single JSON object and no other text or markdown.`;
+            // FIX: Simplify the prompt and use responseSchema for reliable JSON output.
+            const promptText = `Determine if this image contains a shoe. If it does, identify its dominant colors. Classify colors covering 10% or more of the shoe as "mainColors" and colors covering less than 10% as "sideColors".`;
 
             const analysisResponse = await ai.models.generateContent({
                 model: 'gemini-2.5-flash',
-                contents: { parts: [imagePart, { text: combinedPrompt }] },
+                contents: { parts: [imagePart, { text: promptText }] },
+                config: {
+                    responseMimeType: "application/json",
+                    responseSchema: {
+                        type: Type.OBJECT,
+                        properties: {
+                            isShoe: {
+                                type: Type.BOOLEAN,
+                                description: "Whether the image contains a shoe."
+                            },
+                            mainColors: {
+                                type: Type.ARRAY,
+                                items: { type: Type.STRING },
+                                description: "Colors covering 10% or more of the shoe."
+                            },
+                            sideColors: {
+                                type: Type.ARRAY,
+                                items: { type: Type.STRING },
+                                description: "Colors covering less than 10% of the shoe."
+                            }
+                        }
+                    }
+                }
             });
 
             let analysisResult;
             try {
-                let jsonString = analysisResponse.text.trim();
-                if (jsonString.startsWith('```json')) {
-                    jsonString = jsonString.substring(7, jsonString.length - 3).trim();
-                }
-                analysisResult = JSON.parse(jsonString);
+                // FIX: With responseSchema, we can parse the JSON directly without cleaning up markdown.
+                analysisResult = JSON.parse(analysisResponse.text);
             } catch (parseError) {
                 console.error("Failed to parse AI response:", parseError, "Response was:", analysisResponse.text);
                 setError("The AI response was not in the expected format. This can happen due to high traffic. Please try again in a moment.");
