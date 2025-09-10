@@ -10,7 +10,7 @@ import { GoogleGenAI, Type } from "@google/genai";
 // Initialize htm with Preact's hyperscript function
 const html = htm.bind(h);
 
-// FIX: Use `process.env.API_KEY` as required by the coding guidelines. This resolves the TypeScript error for `import.meta.env`.
+// Fix: The API key must be obtained from `process.env.API_KEY` as per the coding guidelines.
 const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
 
