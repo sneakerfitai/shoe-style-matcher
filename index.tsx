@@ -2,15 +2,14 @@
  * @license
  * SPDX-License-Identifier: Apache-2.0
 */
-import { h, render } from 'preact';
+import { render } from 'preact';
 import { useState, useEffect, useCallback } from 'preact/hooks';
-import htm from 'htm';
+import { html } from 'htm/preact';
+// FIX: Import `Type` for defining the response schema.
 import { GoogleGenAI, Type } from "@google/genai";
 
-// Initialize htm with Preact's hyperscript function
-const html = htm.bind(h);
-
-// Fix: The API key must be obtained from `process.env.API_KEY` as per the coding guidelines.
+// Initialize the Google AI client.
+// FIX: Use `process.env.API_KEY` as per the coding guidelines to resolve the error.
 const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
 
@@ -154,6 +153,7 @@ const App = () => {
                 },
             };
             
+            // FIX: Simplify the prompt and use responseSchema for reliable JSON output.
             const promptText = `Determine if this image contains a shoe. If it does, identify its dominant colors. Classify colors covering 10% or more of the shoe as "mainColors" and colors covering less than 10% as "sideColors".`;
 
             const analysisResponse = await ai.models.generateContent({
@@ -185,6 +185,7 @@ const App = () => {
 
             let analysisResult;
             try {
+                // FIX: With responseSchema, we can parse the JSON directly without cleaning up markdown.
                 analysisResult = JSON.parse(analysisResponse.text);
             } catch (parseError) {
                 console.error("Failed to parse AI response:", parseError, "Response was:", analysisResponse.text);
